@@ -1,15 +1,16 @@
 [![trophy](https://github-profile-trophy.vercel.app/?username=Noticedxaaryan&title=Stars,Followers,Commits,Repositories,MultipleLang,PullRequest&theme=onedark)](https://github.com/ryo-ma/github-profile-trophy)
   
 ### About Me:    
-I'm a passionate data scientist with a knack for predictive analytics, specializing in recurrent neural networks (RNN) and LSTM models. I thrive on tackling regression tasks and exploring the fascinating realm of reinforcement learning (RL). Additionally, I have a strong foundation in classical machine learning and possess the requisite mathematical prowess.
+I am a 17-year-old enthusiast who embarked on a computer journey with an obsolete office PC back in second grade. Guided by My curiosity and an uncle (My friends dad), I learned to assemble and troubleshoot PCs by fifth grade. My programming adventure began in sixth grade with HTML, followed by CSS. By tenth grade, I had mastered the basics of HTML, CSS, C++, JavaScript, and Python. Building and configuring computers became my part-time passion and had experience dealing with micro controller and other electronic projects.
 
-Currently, I'm delving into the realms of decentralized finance (DeFi) and web3, where I'm actively engaged in crafting and analyzing smart contracts. During my leisure time, you'll find me honing my problem-solving skills on LeetCode and participating in CTF challenges.
+In eleventh grade, I discovered data science and found my calling. I enrolled in a ‘PG in Data Science, ML, and Neural Networks’ course at Data Trained. My journey continues, fuelled by curiosity and a relentless pursuit of knowledge. I’m currently exploring the integration of AI in data science and even planning to create a Linux distro for this purpose.
+
+Also I'm a passionate data scientist with a knack for predictive analytics, specializing in recurrent neural networks (RNN) and LSTM models. I thrive on tackling regression tasks and exploring the fascinating realm of reinforcement learning (RL). Additionally, I have a strong foundation in classical machine learning and possess the requisite mathematical prowess.
        
-   
+<!--   
 ### Social media: 📡    
 -Linkedin - [![Linkedin](www.linkedin.com/in/noticedxaaryan)]
 -Intagram - [![Instagram](https://www.instagram.com/noticed_aaryan/)
-<!--
 - - [![]()]
 - - [![]()]
 -->
