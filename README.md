@@ -15,10 +15,10 @@
 -  Personal development
 -  Personal Project --Noticed Solution, Libre Mind.  
   
-- 🌱 I’m currently learning Web Development, Different language.... etc  
+### 🌱 I’m currently learning - Web Development, Different language.... etc  
   
 
-- ⚡ Fun fact: I am 17  
+### ⚡ Fun fact: -I am 17  
   
 
 <br/>  
