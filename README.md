@@ -1,4 +1,131 @@
-[![trophy](https://github-profile-trophy.vercel.app/?username=Noticedxaaryan&title=Stars,Followers,Commits,Repositories,MultipleLang,PullRequest&theme=onedark)](https://github.com/ryo-ma/github-profile-trophy)
+
+<div align="center">
+<img src="https://i.pinimg.com/originals/68/ae/bf/68aebf4c71bd1d6090f87237272b01e5.gif" align="center" style="width: 100%" />
+</div>  
+  
+
+### <div align="center">I'm Aaryan Kumar Tiwari, a part-time Data-Scientist and a Student👨‍💻 Started working remotely this year. 🚀</div>  
+  
+
+- 🔭 I’m currently working on: PG in Data Science and Machine Learning and Neural Network --
+- Data Trained
+-Internship at Flip Robo
+-Class 12 Commerce
+-Personal development
+-Personal Project --Noticed Solution, Libre Mind.  
+  
+
+- 🌱 I’m currently learning Web Development, Different language.... etc  
+  
+
+- ⚡ Fun fact: I am 17  
+  
+
+<br/>  
+
+
+## My Skill Set  
+<table><tr><td valign="top" width="33%">
+
+
+
+### Frontend  
+<div align="center">  
+<a href="https://en.wikipedia.org/wiki/HTML5" target="_blank"><img style="margin: 10px" src="https://profilinator.rishav.dev/skills-assets/html5-original-wordmark.svg" alt="HTML5" height="75" /></a>  
+<a href="https://www.raspberrypi.org/" target="_blank"><img style="margin: 10px" src="https://profilinator.rishav.dev/skills-assets/raspberrypi.png" alt="Raspberry Pi" height="75" /></a>  
+<a href="https://powerbi.microsoft.com/en-us/" target="_blank"><img style="margin: 10px" src="https://profilinator.rishav.dev/skills-assets/powerbi.png" alt="Power Bi" height="75" /></a>  
+<a href="https://wordpress.com/" target="_blank"><img style="margin: 10px" src="https://profilinator.rishav.dev/skills-assets/wordpress.png" alt="WordPress" height="75" /></a>  
+</div>
+
+</td><td valign="top" width="33%">
+
+
+
+### Backend  
+<div align="center">  
+<a href="https://www.linux.org/" target="_blank"><img style="margin: 10px" src="https://profilinator.rishav.dev/skills-assets/linux-original.svg" alt="Linux" height="75" /></a>  
+<a href="https://www.python.org/" target="_blank"><img style="margin: 10px" src="https://profilinator.rishav.dev/skills-assets/python-original.svg" alt="Python" height="75" /></a>  
+<a href="https://github.com/" target="_blank"><img style="margin: 10px" src="https://profilinator.rishav.dev/skills-assets/git-scm-icon.svg" alt="Git" height="75" /></a>  
+<a href="https://www.mysql.com/" target="_blank"><img style="margin: 10px" src="https://profilinator.rishav.dev/skills-assets/mysql-original-wordmark.svg" alt="MySQL" height="75" /></a>  
+</div>
+
+</td><td valign="top" width="33%">
+
+
+
+### DevOps  
+<div align="center">  
+<a href="https://www.linux.org/" target="_blank"><img style="margin: 10px" src="https://profilinator.rishav.dev/skills-assets/linux-original.svg" alt="Linux" height="75" /></a>  
+<a href="https://github.com/" target="_blank"><img style="margin: 10px" src="https://profilinator.rishav.dev/skills-assets/git-scm-icon.svg" alt="Git" height="75" /></a>  
+<a href="https://aws.amazon.com/" target="_blank"><img style="margin: 10px" src="https://profilinator.rishav.dev/skills-assets/amazonwebservices-original-wordmark.svg" alt="AWS" height="75" /></a>  
+</div>
+
+</td></tr></table>  
+
+<br/>  
+
+
+## Connect with me  
+<div align="center">
+<a href="https://github.com/NoticedXAaryan" target="_blank">
+<img src=https://img.shields.io/badge/github-%2324292e.svg?&style=for-the-badge&logo=github&logoColor=white alt=github style="margin-bottom: 5px;" />
+</a>
+<a href="https://gitlab.com/NoticedXAaryan" target="_blank">
+<img src=https://img.shields.io/badge/gitlab-330F63.svg?&style=for-the-badge&logo=gitlab&logoColor=white alt=gitlab style="margin-bottom: 5px;" />
+</a>
+<a href="https://linkedin.com/in/www.linkedin.com/in/noticedxaaryan" target="_blank">
+<img src=https://img.shields.io/badge/linkedin-%231E77B5.svg?&style=for-the-badge&logo=linkedin&logoColor=white alt=linkedin style="margin-bottom: 5px;" />
+</a>
+<a href="https://instagram.com/Noticed_Aaryan" target="_blank">
+<img src=https://img.shields.io/badge/instagram-%23000000.svg?&style=for-the-badge&logo=instagram&logoColor=white alt=instagram style="margin-bottom: 5px;" />
+</a>  
+</div>  
+  
+
+<br/>  
+
+
+## Github Stats  
+<div align="center"><img src="https://github-readme-stats.vercel.app/api?username=NoticedXAaryan&show_icons=true&count_private=true&hide_border=true" align="center" /></div>  
+
+<br/>  
+
+
+## Recent Blog Posts  
+
+
+### About Me: 😼  
+I am a 17-year-old enthusiast who embarked on a computer journey with an obsolete office PC back in second grade. Guided by My curiosity and an uncle (My friends dad), I learned to assemble and troubleshoot PCs by fifth grade. My programming adventure began in sixth grade with HTML, followed by CSS. By tenth grade, I had mastered the basics of HTML, CSS, C++, JavaScript, and Python. Building and configuring computers became my part-time passion and had experience dealing with micro controller and other electronic projects.
+
+In eleventh grade, I discovered data science and found my calling. I enrolled in a ‘PG in Data Science, ML, and Neural Networks’ course at Data Trained. My journey continues, fuelled by curiosity and a relentless pursuit of knowledge. I’m currently exploring the integration of AI in data science and even planning to create a Linux distro for this purpose.
+
+Also I'm a passionate data scientist with a knack for predictive analytics, specializing in recurrent neural networks (RNN) and LSTM models. I thrive on tackling regression tasks and exploring the fascinating realm of reinforcement learning (RL). Additionally, I have a strong foundation in classical machine learning and possess the requisite mathematical prowess.  
+  
+
+<br/>  
+
+![end_gif](https://raw.githubusercontent.com/NoticedXAaryan/NoticedXAaryan/269a22ced0be44ee33de53d0f81485427658ab9d/assets/github-snake.svg)  
+  
+
+<br/>  
+
+<div align="center">
+<img src="https://komarev.com/ghpvc/?username=NoticedXAaryan&&style=flat-square" align="center" />
+</div>  
+  
+
+<br/>  
+
+
+<br />
+
+----
+<div align="center">Generated using <a href="https://profilinator.rishav.dev/" target="_blank">Github Profilinator</a></div>
+
+
+
+
+<!--[![trophy](https://github-profile-trophy.vercel.app/?username=Noticedxaaryan&title=Stars,Followers,Commits,Repositories,MultipleLang,PullRequest&theme=onedark)](https://github.com/ryo-ma/github-profile-trophy)
   
 ### About Me:    
 I am a 17-year-old enthusiast who embarked on a computer journey with an obsolete office PC back in second grade. Guided by My curiosity and an uncle (My friends dad), I learned to assemble and troubleshoot PCs by fifth grade. My programming adventure began in sixth grade with HTML, followed by CSS. By tenth grade, I had mastered the basics of HTML, CSS, C++, JavaScript, and Python. Building and configuring computers became my part-time passion and had experience dealing with micro controller and other electronic projects.
@@ -16,7 +143,7 @@ Also I'm a passionate data scientist with a knack for predictive analytics, spec
 -Intagram - [![Instagram](https://www.instagram.com/noticed_aaryan/)
 - - [![]()]
 - - [![]()]
--->
+
 ## Competitions: 🥇
 Null for now 😓
 <!--
@@ -35,7 +162,7 @@ Null for now 😓
 |wolvCTF|top 31%| undermouses|03/2024|
 |osuCTF|top 35%| undermouses |02/2024|
 |ethernautCTF|out of competition|solo|03/2024|
--->
+
 ### Algorithms [LeetCode](https://leetcode.com/NticedXAaryan/)
 
 ### Working on: 🚀
@@ -104,7 +231,7 @@ Null for now 😓
   <img src="https://github.com/devicons/devicon/blob/master/icons/gitlab/gitlab-original-wordmark.svg" title="GitLab" alt="GitLab" width="30" height="30"/>
   <img src="https://github.com/devicons/devicon/blob/master/icons/confluence/confluence-original-wordmark.svg" title="Confluence" alt="Confluence" width="30" height="30"/>
   <img src="https://github.com/devicons/devicon/blob/master/icons/jira/jira-original-wordmark.svg" title="Jira" alt="Jira" width="30" height="30"/>
---> 
+
 </div>
 
 ---
@@ -128,6 +255,7 @@ Null for now 😓
 
 
 <div id="header" align="center">
+
   <img src="https://komarev.com/ghpvc/?username=noticedxaaryan&style=for-the-badge&color=orange" alt=""/>
 </div>
 
@@ -135,5 +263,5 @@ Null for now 😓
  <img width="1000" src="assets/github-snake.svg" alt="snake"/>
 </p>
 
-
+-->
 
