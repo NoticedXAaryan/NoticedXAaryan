@@ -92,8 +92,6 @@
 <br/>  
 
 
-## Recent Blog Posts  
-
 
 ### About Me: 😼  
 I am a 17-year-old enthusiast who embarked on a computer journey with an obsolete office PC back in second grade. Guided by My curiosity and an uncle (My friends dad), I learned to assemble and troubleshoot PCs by fifth grade. My programming adventure began in sixth grade with HTML, followed by CSS. By tenth grade, I had mastered the basics of HTML, CSS, C++, JavaScript, and Python. Building and configuring computers became my part-time passion and had experience dealing with micro controller and other electronic projects.
