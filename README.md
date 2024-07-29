@@ -80,7 +80,7 @@
 <a href="https://instagram.com/Noticed_Aaryan" target="_blank">
 <img src=https://img.shields.io/badge/instagram-%23000000.svg?&style=for-the-badge&logo=instagram&logoColor=white alt=instagram style="margin-bottom: 5px;" />
 <a href="mailto:Aaryantiwari890@gmail.com" target="_blank">
-<img src=/asset/email.svg alt=Email style="margin-bottom: 5px;"/>
+<img src=[/asset/email.svg](https://raw.githubusercontent.com/NoticedXAaryan/NoticedXAaryan/943d2491f0510c7d285a9dd650abe52d923e34ac/assets/email.svg) alt=Email style="margin-bottom: 5px;"/>
 </a>  
 </div>  
   
