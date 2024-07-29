@@ -80,7 +80,7 @@
 <a href="https://instagram.com/Noticed_Aaryan" target="_blank">
 <img src=https://img.shields.io/badge/instagram-%23000000.svg?&style=for-the-badge&logo=instagram&logoColor=white alt=instagram style="margin-bottom: 5px;" />
 <a href="mailto:Aaryantiwari890@gmail.com" target="_blank">
-<img src="https://www.spyearpiece.com/wp-content/uploads/logo-Gmail.png" alt=Email style="margin-bottom:"width:10px;height:5px;"/>
+<img src="https://www.spyearpiece.com/wp-content/uploads/logo-Gmail.png" alt=Email style=width:10px;height:5px;"/>
 </a>  
 </div>  
   
