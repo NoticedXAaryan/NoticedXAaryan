@@ -79,6 +79,8 @@
 </a>
 <a href="https://instagram.com/Noticed_Aaryan" target="_blank">
 <img src=https://img.shields.io/badge/instagram-%23000000.svg?&style=for-the-badge&logo=instagram&logoColor=white alt=instagram style="margin-bottom: 5px;" />
+<a href="Aaryantiwari890@gmail.com" target="_blank">
+<img src=[https://img.shields.io/badge/github-%2324292e.svg?&style](https://ssl.gstatic.com/ui/v1/icons/mail/rfr/logo_gmail_lockup_default_1x_r5.png)=for-the-badge&logo=github&logoColor=white alt=Email style="margin-bottom: 5px;" />
 </a>  
 </div>  
   
@@ -112,14 +114,6 @@ Also I'm a passionate data scientist with a knack for predictive analytics, spec
 <img src="https://komarev.com/ghpvc/?username=NoticedXAaryan&&style=flat-square" align="center" />
 </div>  
   
-
-<br/>  
-
-
-<br />
-
-----
-<div align="center">Generated using <a href="https://profilinator.rishav.dev/" target="_blank">Github Profilinator</a></div>
 
 
 
