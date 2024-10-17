@@ -4,7 +4,7 @@
 </div>  
   
 
-### <div align="center">I'm Aaryan Kumar Tiwari, a part-time Data-Scientist and a Student👨‍💻 Started working remotely this year. 🚀</div>  
+### <div align="center">I'm < h2 >Aaryan Kumar Tiwari< /h2 >, a part-time Data-Scientist and a Student👨‍💻 Started working remotely this year. 🚀</div>  
 <br>
   
 
