@@ -7,14 +7,6 @@
 ### <div align="center">I'm Aaryan Kumar Tiwari, a part-time Data-Scientist and a Student👨‍💻 Started working remotely this year. 🚀</div>  
 <br>
   
-
-### 🔭 I’m currently working on:
--  PG in Data Science and Machine Learning and Neural Network (Data Trained) 
--  Internship at Flip Robo
--  Class 12 Commerce
--  Personal development
--  Personal Project - Exploring diffrent language and OS.
-  
 ### 🌱 I’m currently learning Class 12th, Data Science, Different language and linux ... etc  
   
 
