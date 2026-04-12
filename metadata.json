@@ -1,7 +1,0 @@
-{
-  "name": "Aaryan's Portfolio",
-  "description": "An immersive, GTA 6 inspired portfolio website with smooth animations and a computer vision game.",
-  "requestFramePermissions": [
-    "camera"
-  ]
-}
