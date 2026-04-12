@@ -1,0 +1,18 @@
+{
+  "name": "Aaryan Portfolio",
+  "short_name": "Aaryan",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#09090b",
+  "theme_color": "#09090b",
+  "description": "Portfolio of Aaryan Kumar Tiwari: full-stack engineering, AI/ML systems, and low-level programming projects.",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Core crawl target
+Sitemap: https://aaaryan.space/sitemap.xml

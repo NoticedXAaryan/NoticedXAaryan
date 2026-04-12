@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-script: "Yellowtail", cursive;
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .text-stroke {
+    -webkit-text-stroke: 1px rgba(255,255,255,0.2);
+    color: transparent;
+  }
+  
+  .text-stroke-hover:hover {
+    -webkit-text-stroke: 1px rgba(255,255,255,1);
+    color: white;
+  }
+}
+
+body {
+  cursor: none; /* Hide default cursor for custom one */
+  background-color: #09090b;
+}
+
+html {
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+}
+
+/* Ensure links and buttons don't show default cursor */
+a, button, [role="button"] {
+  cursor: none;
+}
+
+/* Restore default cursor for macOS section */
+#macos, #macos * {
+  cursor: auto !important;
+}
+
+#macos a, #macos button, #macos [role="button"], #macos .cursor-pointer, #macos [draggable="true"], #macos .titlebar {
+  cursor: pointer !important;
+}
+
+#macos .titlebar:active {
+  cursor: grabbing !important;
+}
