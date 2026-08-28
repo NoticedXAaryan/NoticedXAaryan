@@ -26,11 +26,12 @@
 }
 
 body {
+  cursor: none; /* Hide default cursor for custom one */
   background-color: #09090b;
-  margin: 0;
 }
 
 html {
+  scroll-snap-type: y proximity;
   scroll-behavior: smooth;
 }
 
@@ -57,15 +58,22 @@ html {
   outline-offset: 4px;
 }
 
-#arch-desktop,
-#arch-desktop * {
-  user-select: none;
+/* Ensure links and buttons don't show default cursor */
+a, button, [role="button"] {
+  cursor: none;
 }
 
-#arch-desktop input,
-#arch-desktop p,
-#arch-desktop dd {
-  user-select: text;
+/* Restore default cursor for macOS section */
+#macos, #macos * {
+  cursor: auto !important;
+}
+
+#macos a, #macos button, #macos [role="button"], #macos .cursor-pointer, #macos [draggable="true"], #macos .titlebar {
+  cursor: pointer !important;
+}
+
+#macos .titlebar:active {
+  cursor: grabbing !important;
 }
 
 @media (pointer: coarse) {
@@ -84,6 +92,7 @@ html {
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+    scroll-snap-type: none;
   }
 
   *,

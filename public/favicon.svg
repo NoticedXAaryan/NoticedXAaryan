@@ -1,6 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title desc">
-  <title id="title">Aaryan monogram</title><desc id="desc">A geometric letter A inspired by an Arch Linux silhouette</desc>
-  <defs><linearGradient id="surface" x1="16" y1="8" x2="112" y2="120" gradientUnits="userSpaceOnUse"><stop stop-color="#151a22"/><stop offset="1" stop-color="#05070a"/></linearGradient><linearGradient id="mark" x1="38" y1="25" x2="88" y2="105" gradientUnits="userSpaceOnUse"><stop stop-color="#E8FDFF"/><stop offset=".45" stop-color="#67E8F9"/><stop offset="1" stop-color="#0EA5E9"/></linearGradient></defs>
-  <rect x="5" y="5" width="118" height="118" rx="30" fill="url(#surface)" stroke="#27313F" stroke-width="6"/>
-  <path d="M64 21 24 108c12-8 24-13 35-15l5-20 5 20c12 2 23 7 35 15L64 21Z" fill="url(#mark)"/><path d="m64 42-9 22 9-5 9 5-9-22Z" fill="#0A0D12"/><circle cx="99" cy="30" r="7" fill="#67E8F9"/>
+  <title id="title">Aaryan Portfolio Favicon</title>
+  <desc id="desc">Minimal monogram icon with letter A</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#111827" />
+    </linearGradient>
+    <linearGradient id="fg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#34d399" />
+      <stop offset="100%" stop-color="#60a5fa" />
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="28" fill="url(#bg)" />
+  <path d="M64 20 20 108h18l10-20h32l10 20h18L64 20zm0 35 9 18H55l9-18z" fill="url(#fg)"/>
 </svg>
