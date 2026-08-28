@@ -1,11 +1,27 @@
 import type { SkillNode } from '../types/app';
 
+export interface PublicRepo {
+  id: number;
+  name: string;
+  desc: string;
+  stars: string;
+  lang: string;
+  url: string;
+}
+
 export const WHAT_I_DO_ROWS = [
   ['FULL-STACK WEB', 'MACHINE LEARNING', 'COMPILER DESIGN', 'FULL-STACK WEB', 'MACHINE LEARNING', 'COMPILER DESIGN'],
   ['SYSTEMS ARCHITECTURE', 'DATA ENGINEERING', 'UI/UX DESIGN', 'SYSTEMS ARCHITECTURE', 'DATA ENGINEERING', 'UI/UX DESIGN'],
   ['CLOUD COMPUTING', 'DEVOPS', 'WEBGL & 3D', 'CLOUD COMPUTING', 'DEVOPS', 'WEBGL & 3D'],
   ['LOW-LEVEL SYSTEMS', 'DISTRIBUTED DATABASES', 'PERFORMANCE OPTIMIZATION', 'LOW-LEVEL SYSTEMS', 'DISTRIBUTED DATABASES', 'PERFORMANCE OPTIMIZATION']
 ] as const;
+
+export const GITHUB_REPOS: PublicRepo[] = [
+  { id: 1, name: 'SamjhoAI', desc: 'A Sign Language enabled meet app for people with disability and fit working alike and together.', stars: '0', lang: 'TypeScript', url: 'https://github.com/NoticedXAaryan/SamjhoAI' },
+  { id: 2, name: 'Ozone', desc: 'A Rust based Compiler.', stars: '0', lang: 'Rust', url: 'https://github.com/NoticedXAaryan/Ozone' },
+  { id: 3, name: 'Shakespeare-Text-Generator', desc: 'A text generation model based on LSTM using TensorFlow and Keras.', stars: '1', lang: 'Jupyter Notebook', url: 'https://github.com/NoticedXAaryan/Shakespeare-Text-Generator' },
+  { id: 4, name: 'YT-Downloader', desc: 'An open source free and easy to use YT video downloader.', stars: '0', lang: 'Python', url: 'https://github.com/NoticedXAaryan/YT-Downloader' }
+];
 
 export const SKILL_TREE: SkillNode[] = [
   {

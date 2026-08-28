@@ -31,31 +31,8 @@ body {
 }
 
 html {
-  scroll-snap-type: y proximity;
+  scroll-snap-type: y mandatory;
   scroll-behavior: smooth;
-}
-
-.skip-link {
-  position: fixed;
-  top: 1rem;
-  left: 1rem;
-  z-index: 10000;
-  transform: translateY(-200%);
-  border-radius: 9999px;
-  background: white;
-  color: black;
-  padding: 0.75rem 1rem;
-  font-weight: 700;
-  transition: transform 150ms ease;
-}
-
-.skip-link:focus {
-  transform: translateY(0);
-}
-
-:focus-visible {
-  outline: 2px solid white;
-  outline-offset: 4px;
 }
 
 /* Ensure links and buttons don't show default cursor */
@@ -74,33 +51,4 @@ a, button, [role="button"] {
 
 #macos .titlebar:active {
   cursor: grabbing !important;
-}
-
-@media (pointer: coarse) {
-  body,
-  a,
-  button,
-  [role="button"] {
-    cursor: auto;
-  }
-
-  .custom-cursor {
-    display: none;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-    scroll-snap-type: none;
-  }
-
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    scroll-behavior: auto !important;
-    transition-duration: 0.01ms !important;
-  }
 }

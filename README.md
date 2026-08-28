@@ -14,7 +14,7 @@
 
 <div align="center">
 
-  `Full-stack development.` `AI/ML.` `Systems engineering.`
+  `Developer.` `AI Enthusiast.` `Just love computers and programming.`
 
 </div>
 
@@ -24,9 +24,8 @@
 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-ffffff?style=flat-square&logo=linkedin&logoColor=000000)](https://linkedin.com/in/noticedxaaryan)
 [![GitHub](https://img.shields.io/badge/GitHub-ffffff?style=flat-square&logo=github&logoColor=000000)](https://github.com/NoticedXAaryan)
-[![Portfolio](https://img.shields.io/badge/Portfolio-ffffff?style=flat-square&logo=googlechrome&logoColor=000000)](https://aaaryan.space)
 [![Instagram](https://img.shields.io/badge/Instagram-ffffff?style=flat-square&logo=instagram&logoColor=000000)](https://instagram.com/Noticed_Aaryan)
-[![Gmail](https://img.shields.io/badge/Gmail-ffffff?style=flat-square&logo=gmail&logoColor=000000)](mailto:noticedxaaryan@gmail.com)
+[![Gmail](https://img.shields.io/badge/Gmail-ffffff?style=flat-square&logo=gmail&logoColor=000000)](mailto:Aaryantiwari890@gmail.com)
 
 </div>
 
@@ -46,30 +45,11 @@
 
 ## About
 
-BCA (Hons) student at **Parul University**, founder of **Blendable3D**, and builder across **Picobooth LLP**. I work across AI products, accessible software, developer tools, and systems programming.
+BCA (Hons) student at Parul University and founder of **Blendable3D** — a 3D printing & rapid prototyping startup. Pursuing a PG certification in Data Science, ML & Neural Networks. Specialising in RNNs, LSTMs, and Reinforcement Learning.
 
 Started on an old office PC in 2nd grade. Building rigs by 5th. Writing code by 6th. By 10th I knew HTML, CSS, C++, JavaScript, and Python. In 11th, data science found me — and I haven't stopped since.
 
-### Current focus
-
-- **SamjhoAI** — sign-language-enabled meeting software for inclusive collaboration.
-- **Rusty** — a programming language designed around neural native-code compilation.
-- **Calmant** — an AI execution system for commitments, deadlines, and administrative work.
-- **NanoLLM** — a 30M-parameter language model built from scratch.
-
-<br/>
-
----
-
-## Featured work
-
-| Project | What it does | Stack |
-| --- | --- | --- |
-| [SamjhoAI](https://github.com/NoticedXAaryan/SamjhoAI) | Sign-language-enabled meeting software designed for inclusive collaboration. | TypeScript, AI/ML |
-| [Rusty](https://github.com/NoticedXAaryan/Rusty) | A complete programming language exploring neural native-code compilation. | Rust |
-| [Calmant](https://github.com/NoticedXAaryan/Calmant) | An AI personal executive assistant and execution system. | TypeScript, AI |
-| [NanoLLM](https://github.com/NoticedXAaryan/NanoLLM) | A 30M-parameter LLaMA-style language model optimized for single-GPU training. | Python, ML |
-| [JanSevak](https://github.com/NoticedXAaryan/JanSevak) | Multilingual conversational AI for navigating Indian government services. | TypeScript, AI |
+Currently building **LibreMind** and planning a custom Linux distro for data science workflows.
 
 <br/>
 
