@@ -1,0 +1,19 @@
+# Aaryan Kumar Tiwari
+
+Canonical profile: https://aaaryan.space/story
+
+Aaryan Kumar Tiwari is an Indian founder and software developer based in Panaji, Goa. He is the founder of Blendable3D, works alongside Picobooth LLP, and is pursuing a BCA (Hons) at Parul University from 2025 to 2029.
+
+His public work spans accessible software, artificial intelligence, language models, compiler design, systems programming, and full-stack product engineering.
+
+Verified profiles:
+- GitHub: https://github.com/NoticedXAaryan
+- LinkedIn: https://www.linkedin.com/in/noticedxaaryan
+
+Featured public projects:
+- SamjhoAI: sign-language-enabled inclusive collaboration
+- Rusty: an experimental programming language and compiler
+- Calmant: an AI personal executive assistant
+- NanoLLM: a small language model built from scratch
+- JanSevak: multilingual help for Indian government services
+- Ozone: a compiler built in Rust

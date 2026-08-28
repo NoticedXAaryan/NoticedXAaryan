@@ -1,12 +1,12 @@
 {
-  "name": "Aaryan Portfolio",
-  "short_name": "Aaryan",
-  "start_url": "/",
+  "name": "Aaryan Kumar Tiwari — Portfolio",
+  "short_name": "Aaryan.space",
+  "start_url": "/story",
   "scope": "/",
   "display": "standalone",
   "background_color": "#09090b",
-  "theme_color": "#09090b",
-  "description": "Portfolio of Aaryan Kumar Tiwari: full-stack engineering, AI/ML systems, and low-level programming projects.",
+  "theme_color": "#111820",
+  "description": "The story, projects, and interactive Arch desktop of founder and software developer Aaryan Kumar Tiwari.",
   "icons": [
     {
       "src": "/favicon.svg",

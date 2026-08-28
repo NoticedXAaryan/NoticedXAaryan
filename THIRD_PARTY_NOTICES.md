@@ -1,6 +1,6 @@
 # Third-party notices
 
-This website includes adapted implementations of **Blur Text**, **Count Up**, and **Spotlight Card** from [React Bits](https://reactbits.dev/) by David Haz.
+This website includes adapted implementations of **Blur Text**, **Click Spark**, and **Dock** from [React Bits](https://reactbits.dev/) by David Haz.
 
 Copyright (c) 2026 David Haz
 
