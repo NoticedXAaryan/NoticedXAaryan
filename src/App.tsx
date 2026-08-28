@@ -1,8 +1,12 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { motion, useScroll, useTransform, useSpring, useMotionValue, AnimatePresence, useAnimationFrame, useMotionTemplate, useInView } from 'motion/react';
-import { ExternalLink, ArrowRight, Trophy, Code2, Star, Github, Twitter, Linkedin, Mail, Terminal, Cpu, Globe, Briefcase, ArrowUpRight, Play, RotateCcw, Camera, XCircle, Folder, FileText, Minus, Maximize2, Monitor, Send } from 'lucide-react';
-import { HandLandmarker, FilesetResolver } from '@mediapipe/tasks-vision';
-import { GITHUB_REPOS, HAND_CONNECTIONS, SKILL_TREE, WHAT_I_DO_ROWS } from './data/portfolioData';
+import { motion, useScroll, useTransform, useSpring, useMotionValue, AnimatePresence, useAnimationFrame, useMotionTemplate, useInView, useDragControls } from 'motion/react';
+import { ExternalLink, ArrowRight, Trophy, Code2, Github, Twitter, Linkedin, Mail, Terminal, Cpu, Globe, Briefcase, ArrowUpRight, Play, RotateCcw, Camera, XCircle, Folder, FileText, Minus, Maximize2, Monitor, Send } from 'lucide-react';
+import type { HandLandmarker as HandLandmarkerInstance } from '@mediapipe/tasks-vision';
+import FeaturedProjects from './components/FeaturedProjects';
+import ProfileOverview from './components/ProfileOverview';
+import BlurText from './components/reactbits/BlurText';
+import { HAND_CONNECTIONS, SKILL_TREE, WHAT_I_DO_ROWS } from './data/portfolioData';
+import { useGitHubData } from './hooks/useGitHubData';
 import type {
   AppUiState,
   DesktopIconProps,
@@ -95,7 +99,7 @@ function CustomCursor() {
 
   return (
     <motion.div
-      className="fixed top-0 left-0 w-8 h-8 rounded-full border-2 border-white pointer-events-none z-[9999] mix-blend-difference flex items-center justify-center"
+      className="custom-cursor fixed top-0 left-0 w-8 h-8 rounded-full border-2 border-white pointer-events-none z-[9999] mix-blend-difference flex items-center justify-center"
       style={{ x: cursorXSpring, y: cursorYSpring }}
       animate={{ 
         scale: isHovering ? 2 : 1,
@@ -112,12 +116,12 @@ function CustomCursor() {
   );
 }
 
-// 2. Magnetic Button
-function MagneticButton({ children, className, onClick }: { children: React.ReactNode, className?: string, onClick?: () => void }) {
-  const ref = useRef<HTMLButtonElement>(null);
+// 2. Magnetic Link
+function MagneticLink({ children, className, href }: { children: React.ReactNode, className?: string, href: string }) {
+  const ref = useRef<HTMLAnchorElement>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
 
-  const handleMouse = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleMouse = (e: React.MouseEvent<HTMLAnchorElement>) => {
     const { clientX, clientY } = e;
     const { height, width, left, top } = ref.current!.getBoundingClientRect();
     const middleX = clientX - (left + width / 2);
@@ -128,17 +132,17 @@ function MagneticButton({ children, className, onClick }: { children: React.Reac
   const reset = () => setPosition({ x: 0, y: 0 });
 
   return (
-    <motion.button
+    <motion.a
       ref={ref}
+      href={href}
       onMouseMove={handleMouse}
       onMouseLeave={reset}
       animate={{ x: position.x, y: position.y }}
       transition={{ type: "spring", stiffness: 150, damping: 15, mass: 0.1 }}
-      onClick={onClick}
       className={`interactive relative ${className}`}
     >
       {children}
-    </motion.button>
+    </motion.a>
   );
 }
 
@@ -326,13 +330,16 @@ function DockIcon({ icon, label, onClick, isOpen }: DockIconProps) {
 }
 
 function OSWindow({ win, isActive, onClose, onMinimize, onMaximize, onFocus, constraintsRef, index }: OSWindowProps) {
+  const dragControls = useDragControls();
+
   if (win.isMinimized) return null;
 
   return (
     <motion.div
       drag={!win.isMaximized}
       dragConstraints={constraintsRef}
-      dragHandle=".titlebar"
+      dragControls={dragControls}
+      dragListener={false}
       dragMomentum={false}
       initial={{ scale: 0.95, opacity: 0, y: 10 }}
       animate={{ 
@@ -362,6 +369,9 @@ function OSWindow({ win, isActive, onClose, onMinimize, onMaximize, onFocus, con
       {/* Titlebar */}
       <div 
         className="titlebar h-12 flex items-center px-4 cursor-grab active:cursor-grabbing relative z-10 bg-white/5 border-b border-white/5"
+        onPointerDown={(event) => {
+          if (!win.isMaximized) dragControls.start(event);
+        }}
         onDoubleClick={(e) => { e.stopPropagation(); onMaximize(); }}
       >
         <div className="flex gap-2 absolute left-4">
@@ -706,7 +716,7 @@ function SkillShooterGame() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [uiState, setUiState] = useState<AppUiState>('start');
   const [score, setScore] = useState(0);
-  const [handLandmarker, setHandLandmarker] = useState<HandLandmarker | null>(null);
+  const [handLandmarker, setHandLandmarker] = useState<HandLandmarkerInstance | null>(null);
 
   const gameRef = useRef<GameRuntimeState>({
     state: 'start',
@@ -722,31 +732,28 @@ function SkillShooterGame() {
     lastVideoTime: -1
   });
 
-  // Initialize MediaPipe
-  useEffect(() => {
-    const initMediaPipe = async () => {
-      try {
-        const vision = await FilesetResolver.forVisionTasks(
-          "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3/wasm"
-        );
-        const landmarker = await HandLandmarker.createFromOptions(vision, {
-          baseOptions: {
-            modelAssetPath: `https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task`,
-            delegate: "GPU"
-          },
-          runningMode: "VIDEO",
-          numHands: 1,
-          minHandDetectionConfidence: 0.7,
-          minHandPresenceConfidence: 0.7,
-          minTrackingConfidence: 0.7
-        });
-        setHandLandmarker(landmarker);
-      } catch (e) {
-        console.error("Failed to init MediaPipe:", e);
-      }
-    };
-    initMediaPipe();
-  }, []);
+  const loadHandLandmarker = useCallback(async () => {
+    if (handLandmarker) return handLandmarker;
+
+    const { FilesetResolver, HandLandmarker } = await import('@mediapipe/tasks-vision');
+    const vision = await FilesetResolver.forVisionTasks(
+      'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.34/wasm'
+    );
+    const landmarker = await HandLandmarker.createFromOptions(vision, {
+      baseOptions: {
+        modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task',
+        delegate: 'GPU'
+      },
+      runningMode: 'VIDEO',
+      numHands: 1,
+      minHandDetectionConfidence: 0.7,
+      minHandPresenceConfidence: 0.7,
+      minTrackingConfidence: 0.7
+    });
+
+    setHandLandmarker(landmarker);
+    return landmarker;
+  }, [handLandmarker]);
 
   const stopCamera = useCallback(() => {
     if (videoRef.current && videoRef.current.srcObject) {
@@ -758,13 +765,23 @@ function SkillShooterGame() {
 
   // Cleanup camera on unmount
   useEffect(() => {
-    return () => stopCamera();
-  }, [stopCamera]);
+    return () => {
+      stopCamera();
+      handLandmarker?.close();
+    };
+  }, [handLandmarker, stopCamera]);
 
   const enableCam = async () => {
-    if (!handLandmarker) return;
     setUiState('loading_cam');
-    
+
+    try {
+      await loadHandLandmarker();
+    } catch (error) {
+      console.error('Unable to load the hand-tracking model:', error);
+      setUiState('setup_error');
+      return;
+    }
+
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ 
         video: { width: 1280, height: 720, facingMode: "user" } 
@@ -1152,10 +1169,27 @@ function SkillShooterGame() {
               </p>
               <button 
                 onClick={enableCam}
-                disabled={!handLandmarker}
-                className="interactive bg-white text-black px-8 py-4 rounded-full font-bold text-lg flex items-center gap-3 hover:scale-105 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+                className="interactive bg-white text-black px-8 py-4 rounded-full font-bold text-lg flex items-center gap-3 hover:scale-105 transition-transform"
               >
-                {handLandmarker ? <><Play className="w-5 h-5" /> Start Game</> : "Loading AI Model..."}
+                <Play className="w-5 h-5" /> Start Game
+              </button>
+            </div>
+          )}
+
+          {uiState === 'setup_error' && (
+            <div className="absolute inset-0 bg-zinc-950/90 backdrop-blur-md flex items-center justify-center flex-col gap-6 z-30 px-6">
+              <div className="w-24 h-24 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mb-4">
+                <Cpu className="w-12 h-12 text-amber-300" />
+              </div>
+              <h3 className="text-3xl md:text-4xl font-black text-white tracking-tighter text-center">AI MODEL UNAVAILABLE</h3>
+              <p className="text-zinc-400 text-center max-w-md">
+                The hand-tracking model could not load. Check your connection and try again.
+              </p>
+              <button
+                onClick={() => setUiState('start')}
+                className="interactive bg-white/10 text-white px-8 py-4 rounded-full font-bold text-lg flex items-center gap-3 hover:bg-white/20 transition-colors border border-white/10"
+              >
+                <RotateCcw className="w-5 h-5" /> Try Again
               </button>
             </div>
           )}
@@ -1182,7 +1216,7 @@ function SkillShooterGame() {
           {uiState === 'loading_cam' && (
             <div className="absolute inset-0 bg-zinc-950/80 backdrop-blur-md flex items-center justify-center flex-col gap-6 z-30">
               <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-white"></div>
-              <h3 className="text-2xl font-bold text-white tracking-tighter">Accessing Camera...</h3>
+              <h3 className="text-2xl font-bold text-white tracking-tighter">Loading AI & Camera...</h3>
             </div>
           )}
           
@@ -1209,16 +1243,18 @@ export default function App() {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const osRef = useRef<HTMLDivElement | null>(null);
   const isOsInView = useInView(osRef, { amount: 0.5 });
-  const { scrollYProgress } = useScroll({ target: containerRef });
+  const { profile, repositories, isLive } = useGitHubData();
 
   return (
     <div ref={containerRef} className="relative bg-zinc-950 text-zinc-50 min-h-screen font-sans selection:bg-zinc-300 selection:text-black overflow-x-hidden">
+      <a href="#main-content" className="skip-link">Skip to main content</a>
       <CustomCursor />
 
       {/* Navigation */}
       <AnimatePresence>
         {!isOsInView && (
-          <motion.nav 
+          <motion.nav
+            aria-label="Primary"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
@@ -1226,7 +1262,7 @@ export default function App() {
             className="fixed top-0 left-0 w-full p-6 md:p-10 flex justify-between items-center z-50 mix-blend-difference"
           >
             <span className="text-xl font-bold tracking-tighter text-white">AARYAN.</span>
-            <div className="flex gap-6 font-mono text-sm tracking-widest uppercase text-white">
+            <div className="flex gap-3 sm:gap-6 font-mono text-xs sm:text-sm tracking-wider sm:tracking-widest uppercase text-white">
               <a href="#github" className="interactive hover:text-zinc-400 transition-colors">Projects</a>
               <a href="#about" className="interactive hover:text-zinc-400 transition-colors">About</a>
               <a href="#contact" className="interactive hover:text-zinc-400 transition-colors">Contact</a>
@@ -1235,6 +1271,7 @@ export default function App() {
         )}
       </AnimatePresence>
 
+      <main id="main-content">
       {/* Hero Section */}
       <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden pt-20 bg-zinc-950 snap-center">
         <GalaxyBackground />
@@ -1254,14 +1291,10 @@ export default function App() {
             </h1>
           </motion.div>
           
-          <motion.p 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1, delay: 0.5 }}
-            className="mt-6 text-lg md:text-2xl text-zinc-300 font-light max-w-3xl leading-relaxed"
-          >
-            Developer. AI Enthusiast. Just love computers and programming.
-          </motion.p>
+          <BlurText
+            text="Founder. AI builder. Systems thinker. Turning ambitious ideas into software people can use."
+            className="mt-6 max-w-3xl justify-center text-lg font-light leading-relaxed text-zinc-300 md:text-2xl"
+          />
 
           <motion.div
             initial={{ opacity: 0 }}
@@ -1269,16 +1302,12 @@ export default function App() {
             transition={{ duration: 1, delay: 0.8 }}
             className="mt-16 flex flex-col sm:flex-row gap-6"
           >
-            <a href="#github" className="interactive">
-              <MagneticButton className="px-8 py-4 rounded-full bg-white text-black font-bold tracking-wide hover:scale-105 transition-transform flex items-center gap-2">
+            <MagneticLink href="#github" className="px-8 py-4 rounded-full bg-white text-black font-bold tracking-wide hover:scale-105 transition-transform flex items-center gap-2">
                 View Projects <ArrowRight className="w-5 h-5" />
-              </MagneticButton>
-            </a>
-            <a href="#contact" className="interactive">
-              <MagneticButton className="px-8 py-4 rounded-full border border-zinc-700 text-white font-bold tracking-wide hover:bg-zinc-900 transition-colors flex items-center gap-2">
+            </MagneticLink>
+            <MagneticLink href="#contact" className="px-8 py-4 rounded-full border border-zinc-700 text-white font-bold tracking-wide hover:bg-zinc-900 transition-colors flex items-center gap-2">
                 Contact Me <Mail className="w-5 h-5" />
-              </MagneticButton>
-            </a>
+            </MagneticLink>
           </motion.div>
         </motion.div>
       </section>
@@ -1291,79 +1320,9 @@ export default function App() {
       {/* What I Do (Four-Line Opposite Scroll) */}
       <WhatIDoScroll />
 
-      {/* Mature About Section */}
-      <section id="about" className="relative py-40 px-4 md:px-12 border-t border-zinc-900 overflow-hidden bg-zinc-950 snap-center">
-        <div className="relative z-10 max-w-6xl mx-auto flex flex-col items-start text-left">
-          <h2 className="text-zinc-400 font-mono tracking-widest mb-12">02 // ABOUT</h2>
-          <div className="space-y-10 text-3xl md:text-5xl lg:text-6xl font-light text-zinc-300 leading-tight max-w-4xl">
-            <motion.p 
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-            >
-              Hi, I'm <span className="text-white font-medium">Aaryan Kumar Tiwari</span>, a developer who just loves <span className="text-white font-medium">computers and programming</span>.
-            </motion.p>
-            <motion.p 
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-            >
-              As the Founder of <span className="text-white font-medium">Blendable3D</span> and a Data Science enthusiast, my work bridges the gap between software development and physical creation, turning complex data into actionable insights and innovative ideas into tangible prototypes.
-            </motion.p>
-            <motion.p 
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
-            >
-              I believe in writing code that is not just functional, but <span className="text-white font-medium">elegant and robust</span>. Every project is an opportunity to push boundaries and build something meaningful.
-            </motion.p>
-          </div>
-        </div>
-      </section>
+      <ProfileOverview profile={profile} isLive={isLive} />
 
-      {/* Subtle Open Source Section */}
-      <section id="github" className="py-32 px-4 md:px-12 max-w-5xl mx-auto border-t border-zinc-900 snap-center">
-        <div className="mb-16 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
-          <div>
-            <h2 className="text-zinc-400 font-mono tracking-widest mb-4">03 // PROJECTS</h2>
-            <h3 className="text-4xl md:text-5xl font-black text-white tracking-tighter">GITHUB REPOSITORIES</h3>
-          </div>
-          <a href="https://github.com/NoticedXAaryan" target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-white transition-colors flex items-center gap-2 interactive">
-            View GitHub Profile <ArrowRight className="w-4 h-4" />
-          </a>
-        </div>
-        
-        <div className="flex flex-col border-t border-zinc-800">
-          {GITHUB_REPOS.map((repo, i) => (
-            <motion.a 
-              key={repo.id} 
-              href={repo.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              className="group flex flex-col md:flex-row justify-between items-start md:items-center py-8 border-b border-zinc-800 hover:bg-zinc-900/30 transition-colors px-4 -mx-4 rounded-xl interactive"
-            >
-              <div className="mb-4 md:mb-0">
-                <h4 className="text-2xl font-bold text-white group-hover:text-zinc-300 transition-colors mb-2">{repo.name}</h4>
-                <p className="text-zinc-400 max-w-xl">{repo.desc}</p>
-              </div>
-              <div className="flex items-center gap-6">
-                <div className="flex items-center gap-2 text-zinc-400">
-                  <Star className="w-4 h-4" /> {repo.stars}
-                </div>
-                <span className="text-zinc-600 font-mono text-sm w-24">{repo.lang}</span>
-                <ArrowRight className="text-zinc-600 group-hover:text-white group-hover:translate-x-2 transition-all" />
-              </div>
-            </motion.a>
-          ))}
-        </div>
-      </section>
+      <FeaturedProjects repositories={repositories} totalRepositories={profile.public_repos ?? 21} />
 
       {/* Fun Playground (Shooter) */}
       <SkillShooterGame />
@@ -1398,20 +1357,21 @@ export default function App() {
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
           >
-            <MagneticButton className="bg-white text-black px-12 py-6 rounded-full text-xl font-bold tracking-wide hover:scale-105 transition-transform inline-flex items-center gap-3">
+            <MagneticLink href="mailto:noticedxaaryan@gmail.com?subject=Portfolio%20inquiry" className="bg-white text-black px-8 sm:px-12 py-5 sm:py-6 rounded-full text-base sm:text-xl font-bold tracking-wide hover:scale-105 transition-transform inline-flex items-center gap-3">
               <Mail className="w-6 h-6" /> noticedxaaryan@gmail.com
-            </MagneticButton>
+            </MagneticLink>
           </motion.div>
         </div>
       </section>
+      </main>
 
       {/* Footer */}
       <footer className="py-8 px-6 md:px-12 border-t border-zinc-900 flex flex-col md:flex-row justify-between items-center gap-6 bg-black">
         <p className="font-mono text-sm text-zinc-400">© {new Date().getFullYear()} AARYAN. ALL RIGHTS RESERVED.</p>
         <div className="flex gap-6">
-          <a href="https://github.com/NoticedXAaryan" target="_blank" rel="noopener noreferrer" className="interactive text-zinc-400 hover:text-white transition-colors"><Github className="w-5 h-5" /></a>
-          <a href="https://twitter.com/noticed_aaryan" target="_blank" rel="noopener noreferrer" className="interactive text-zinc-400 hover:text-white transition-colors"><Twitter className="w-5 h-5" /></a>
-          <a href="https://www.linkedin.com/in/noticedxaaryan" target="_blank" rel="noopener noreferrer" className="interactive text-zinc-400 hover:text-white transition-colors"><Linkedin className="w-5 h-5" /></a>
+          <a href="https://github.com/NoticedXAaryan" target="_blank" rel="noopener noreferrer" aria-label="Aaryan on GitHub" className="interactive text-zinc-400 hover:text-white transition-colors"><Github className="w-5 h-5" aria-hidden="true" /></a>
+          <a href="https://twitter.com/noticed_aaryan" target="_blank" rel="noopener noreferrer" aria-label="Aaryan on X" className="interactive text-zinc-400 hover:text-white transition-colors"><Twitter className="w-5 h-5" aria-hidden="true" /></a>
+          <a href="https://www.linkedin.com/in/noticedxaaryan" target="_blank" rel="noopener noreferrer" aria-label="Aaryan on LinkedIn" className="interactive text-zinc-400 hover:text-white transition-colors"><Linkedin className="w-5 h-5" aria-hidden="true" /></a>
         </div>
       </footer>
     </div>

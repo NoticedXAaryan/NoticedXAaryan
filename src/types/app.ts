@@ -1,6 +1,6 @@
 import type React from 'react';
 
-export type AppUiState = 'start' | 'loading_cam' | 'playing' | 'gameover' | 'permission_denied';
+export type AppUiState = 'start' | 'loading_cam' | 'playing' | 'gameover' | 'permission_denied' | 'setup_error';
 
 export type IconType = React.ComponentType<{ className?: string }>;
 
@@ -40,10 +40,15 @@ export interface GitHubRepo {
   id: number;
   name: string;
   html_url: string;
+  homepage?: string | null;
   language?: string | null;
   stargazers_count?: number;
   forks_count?: number;
   description?: string | null;
+  updated_at?: string;
+  topics?: string[];
+  archived?: boolean;
+  fork?: boolean;
 }
 
 export interface GitHubProfile {
@@ -51,8 +56,13 @@ export interface GitHubProfile {
   name?: string | null;
   login?: string;
   bio?: string | null;
+  company?: string | null;
+  location?: string | null;
+  blog?: string;
+  public_repos?: number;
   followers?: number;
   following?: number;
+  html_url?: string;
 }
 
 export interface ExplorerItem {
