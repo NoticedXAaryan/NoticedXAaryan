@@ -52,3 +52,12 @@ a, button, [role="button"] {
 #macos .titlebar:active {
   cursor: grabbing !important;
 }
+
+/* Agent builders overlay: keep controls clickable without stealing page scroll */
+#agent-builders-root {
+  mix-blend-mode: normal;
+}
+
+#agent-builders-root button {
+  cursor: pointer !important;
+}

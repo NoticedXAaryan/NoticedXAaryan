@@ -3,6 +3,7 @@ import { motion, useScroll, useTransform, useSpring, useMotionValue, AnimatePres
 import { ExternalLink, ArrowRight, Trophy, Code2, Star, Github, Twitter, Linkedin, Mail, Terminal, Cpu, Globe, Briefcase, ArrowUpRight, Play, RotateCcw, Camera, XCircle, Folder, FileText, Minus, Maximize2, Monitor, Send } from 'lucide-react';
 import { HandLandmarker, FilesetResolver } from '@mediapipe/tasks-vision';
 import { GITHUB_REPOS, HAND_CONNECTIONS, SKILL_TREE, WHAT_I_DO_ROWS } from './data/portfolioData';
+import AgentBuilders from './components/AgentBuilders';
 import type {
   AppUiState,
   DesktopIconProps,
@@ -1214,6 +1215,7 @@ export default function App() {
   return (
     <div ref={containerRef} className="relative bg-zinc-950 text-zinc-50 min-h-screen font-sans selection:bg-zinc-300 selection:text-black overflow-x-hidden">
       <CustomCursor />
+      <AgentBuilders />
 
       {/* Navigation */}
       <AnimatePresence>
