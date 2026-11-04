@@ -3,6 +3,7 @@ import { motion, useScroll, useTransform, useSpring, useMotionValue, AnimatePres
 import { ExternalLink, ArrowRight, Trophy, Code2, Star, Github, Twitter, Linkedin, Mail, Terminal, Cpu, Globe, Briefcase, ArrowUpRight, Play, RotateCcw, Camera, XCircle, Folder, FileText, Minus, Maximize2, Monitor, Send } from 'lucide-react';
 import { HandLandmarker, FilesetResolver } from '@mediapipe/tasks-vision';
 import { GITHUB_REPOS, HAND_CONNECTIONS, SKILL_TREE, WHAT_I_DO_ROWS } from './data/portfolioData';
+import AgentBuilders from './components/AgentBuilders';
 import type {
   AppUiState,
   DesktopIconProps,
@@ -1214,6 +1215,7 @@ export default function App() {
   return (
     <div ref={containerRef} className="relative bg-zinc-950 text-zinc-50 min-h-screen font-sans selection:bg-zinc-300 selection:text-black overflow-x-hidden">
       <CustomCursor />
+      <AgentBuilders />
 
       {/* Navigation */}
       <AnimatePresence>
@@ -1223,13 +1225,13 @@ export default function App() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className="fixed top-0 left-0 w-full p-6 md:p-10 flex justify-between items-center z-50 mix-blend-difference"
+            className="fixed top-0 left-0 w-full p-6 md:p-10 flex justify-between items-center z-50 bg-zinc-950/70 backdrop-blur-md border-b border-white/5"
           >
-            <span className="text-xl font-bold tracking-tighter text-white">AARYAN.</span>
+            <span data-build="hero" data-build-id="nav-brand" className="build-pending text-xl font-bold tracking-tighter text-white">AARYAN.</span>
             <div className="flex gap-6 font-mono text-sm tracking-widest uppercase text-white">
-              <a href="#github" className="interactive hover:text-zinc-400 transition-colors">Projects</a>
-              <a href="#about" className="interactive hover:text-zinc-400 transition-colors">About</a>
-              <a href="#contact" className="interactive hover:text-zinc-400 transition-colors">Contact</a>
+              <a data-build="hero" data-build-id="nav-projects" href="#github" className="build-pending interactive hover:text-zinc-400 transition-colors">Projects</a>
+              <a data-build="hero" data-build-id="nav-about" href="#about" className="build-pending interactive hover:text-zinc-400 transition-colors">About</a>
+              <a data-build="hero" data-build-id="nav-contact" href="#contact" className="build-pending interactive hover:text-zinc-400 transition-colors">Contact</a>
             </div>
           </motion.nav>
         )}
@@ -1239,48 +1241,35 @@ export default function App() {
       <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden pt-20 bg-zinc-950 snap-center">
         <GalaxyBackground />
 
-        <motion.div 
-          className="z-10 flex flex-col items-center text-center px-4 w-full max-w-6xl"
-        >
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-            className="flex flex-col items-center"
-          >
-            <p className="text-2xl md:text-4xl font-script text-zinc-400 mb-4 -rotate-2">Hi, I'm</p>
-            <h1 className="text-[clamp(4rem,15vw,10rem)] md:text-[clamp(6rem,12vw,12rem)] leading-none font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-zinc-100 via-zinc-300 to-zinc-600 drop-shadow-2xl pb-4">
+        <div className="z-10 flex flex-col items-center text-center px-4 w-full max-w-6xl">
+          <div className="flex flex-col items-center">
+            <p data-build="hero" data-build-id="hero-hi" className="build-pending text-2xl md:text-4xl font-script text-zinc-400 mb-4 -rotate-2">Hi, I'm</p>
+            <h1 data-build="hero" data-build-id="hero-name" className="build-pending text-[clamp(4rem,15vw,10rem)] md:text-[clamp(6rem,12vw,12rem)] leading-none font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-zinc-100 via-zinc-300 to-zinc-600 drop-shadow-2xl pb-4">
               AARYAN
             </h1>
-          </motion.div>
+          </div>
           
-          <motion.p 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1, delay: 0.5 }}
-            className="mt-6 text-lg md:text-2xl text-zinc-300 font-light max-w-3xl leading-relaxed"
+          <p 
+            data-build="hero"
+            data-build-id="hero-tagline"
+            className="build-pending mt-6 text-lg md:text-2xl text-zinc-300 font-light max-w-3xl leading-relaxed"
           >
             Developer. AI Enthusiast. Just love computers and programming.
-          </motion.p>
+          </p>
 
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1, delay: 0.8 }}
-            className="mt-16 flex flex-col sm:flex-row gap-6"
-          >
-            <a href="#github" className="interactive">
+          <div className="mt-16 flex flex-col sm:flex-row gap-6">
+            <a data-build="hero" data-build-id="hero-cta-projects" href="#github" className="build-pending interactive">
               <MagneticButton className="px-8 py-4 rounded-full bg-white text-black font-bold tracking-wide hover:scale-105 transition-transform flex items-center gap-2">
                 View Projects <ArrowRight className="w-5 h-5" />
               </MagneticButton>
             </a>
-            <a href="#contact" className="interactive">
+            <a data-build="hero" data-build-id="hero-cta-contact" href="#contact" className="build-pending interactive">
               <MagneticButton className="px-8 py-4 rounded-full border border-zinc-700 text-white font-bold tracking-wide hover:bg-zinc-900 transition-colors flex items-center gap-2">
                 Contact Me <Mail className="w-5 h-5" />
               </MagneticButton>
             </a>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       </section>
 
       {/* MacOS Experience (Interactive Desktop) */}
@@ -1294,32 +1283,17 @@ export default function App() {
       {/* Mature About Section */}
       <section id="about" className="relative py-40 px-4 md:px-12 border-t border-zinc-900 overflow-hidden bg-zinc-950 snap-center">
         <div className="relative z-10 max-w-6xl mx-auto flex flex-col items-start text-left">
-          <h2 className="text-zinc-400 font-mono tracking-widest mb-12">02 // ABOUT</h2>
+          <h2 data-build="about" data-build-id="about-label" className="build-pending text-zinc-400 font-mono tracking-widest mb-12">02 // ABOUT</h2>
           <div className="space-y-10 text-3xl md:text-5xl lg:text-6xl font-light text-zinc-300 leading-tight max-w-4xl">
-            <motion.p 
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-            >
+            <p data-build="about" data-build-id="about-p1" className="build-pending">
               Hi, I'm <span className="text-white font-medium">Aaryan Kumar Tiwari</span>, a developer who just loves <span className="text-white font-medium">computers and programming</span>.
-            </motion.p>
-            <motion.p 
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-            >
+            </p>
+            <p data-build="about" data-build-id="about-p2" className="build-pending">
               As the Founder of <span className="text-white font-medium">Blendable3D</span> and a Data Science enthusiast, my work bridges the gap between software development and physical creation, turning complex data into actionable insights and innovative ideas into tangible prototypes.
-            </motion.p>
-            <motion.p 
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
-            >
+            </p>
+            <p data-build="about" data-build-id="about-p3" className="build-pending">
               I believe in writing code that is not just functional, but <span className="text-white font-medium">elegant and robust</span>. Every project is an opportunity to push boundaries and build something meaningful.
-            </motion.p>
+            </p>
           </div>
         </div>
       </section>
@@ -1328,26 +1302,24 @@ export default function App() {
       <section id="github" className="py-32 px-4 md:px-12 max-w-5xl mx-auto border-t border-zinc-900 snap-center">
         <div className="mb-16 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
           <div>
-            <h2 className="text-zinc-400 font-mono tracking-widest mb-4">03 // PROJECTS</h2>
-            <h3 className="text-4xl md:text-5xl font-black text-white tracking-tighter">GITHUB REPOSITORIES</h3>
+            <h2 data-build="projects" data-build-id="projects-label" className="build-pending text-zinc-400 font-mono tracking-widest mb-4">03 // PROJECTS</h2>
+            <h3 data-build="projects" data-build-id="projects-title" className="build-pending text-4xl md:text-5xl font-black text-white tracking-tighter">GITHUB REPOSITORIES</h3>
           </div>
-          <a href="https://github.com/NoticedXAaryan" target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-white transition-colors flex items-center gap-2 interactive">
+          <a data-build="projects" data-build-id="projects-link" href="https://github.com/NoticedXAaryan" target="_blank" rel="noopener noreferrer" className="build-pending text-zinc-400 hover:text-white transition-colors flex items-center gap-2 interactive">
             View GitHub Profile <ArrowRight className="w-4 h-4" />
           </a>
         </div>
         
         <div className="flex flex-col border-t border-zinc-800">
-          {GITHUB_REPOS.map((repo, i) => (
-            <motion.a 
+          {GITHUB_REPOS.map((repo) => (
+            <a 
               key={repo.id} 
               href={repo.url}
               target="_blank"
               rel="noopener noreferrer"
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              className="group flex flex-col md:flex-row justify-between items-start md:items-center py-8 border-b border-zinc-800 hover:bg-zinc-900/30 transition-colors px-4 -mx-4 rounded-xl interactive"
+              data-build="projects"
+              data-build-id={`repo-${repo.id}`}
+              className="build-pending group flex flex-col md:flex-row justify-between items-start md:items-center py-8 border-b border-zinc-800 hover:bg-zinc-900/30 transition-colors px-4 -mx-4 rounded-xl interactive"
             >
               <div className="mb-4 md:mb-0">
                 <h4 className="text-2xl font-bold text-white group-hover:text-zinc-300 transition-colors mb-2">{repo.name}</h4>
@@ -1360,7 +1332,7 @@ export default function App() {
                 <span className="text-zinc-600 font-mono text-sm w-24">{repo.lang}</span>
                 <ArrowRight className="text-zinc-600 group-hover:text-white group-hover:translate-x-2 transition-all" />
               </div>
-            </motion.a>
+            </a>
           ))}
         </div>
       </section>
@@ -1373,42 +1345,34 @@ export default function App() {
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl h-64 bg-zinc-500/10 blur-[100px] rounded-full pointer-events-none" />
         
         <div className="max-w-4xl mx-auto text-center relative z-10">
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-zinc-400 font-mono tracking-widest uppercase mb-6"
+          <p 
+            data-build="contact"
+            data-build-id="contact-label"
+            className="build-pending text-zinc-400 font-mono tracking-widest uppercase mb-6"
           >
             Initiate Contact
-          </motion.p>
-          <motion.h2 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="text-6xl md:text-8xl font-black tracking-tighter mb-12 text-white"
+          </p>
+          <h2 
+            data-build="contact"
+            data-build-id="contact-title"
+            className="build-pending text-6xl md:text-8xl font-black tracking-tighter mb-12 text-white"
           >
             HAVE A PROJECT? <br/>
             <span className="text-zinc-600 hover:text-white transition-colors duration-500 cursor-none">LET'S TALK.</span>
-          </motion.h2>
+          </h2>
           
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-          >
+          <div data-build="contact" data-build-id="contact-cta" className="build-pending">
             <MagneticButton className="bg-white text-black px-12 py-6 rounded-full text-xl font-bold tracking-wide hover:scale-105 transition-transform inline-flex items-center gap-3">
               <Mail className="w-6 h-6" /> noticedxaaryan@gmail.com
             </MagneticButton>
-          </motion.div>
+          </div>
         </div>
       </section>
 
       {/* Footer */}
       <footer className="py-8 px-6 md:px-12 border-t border-zinc-900 flex flex-col md:flex-row justify-between items-center gap-6 bg-black">
-        <p className="font-mono text-sm text-zinc-400">© {new Date().getFullYear()} AARYAN. ALL RIGHTS RESERVED.</p>
-        <div className="flex gap-6">
+        <p data-build="contact" data-build-id="footer-copy" className="build-pending font-mono text-sm text-zinc-400">© {new Date().getFullYear()} AARYAN. ALL RIGHTS RESERVED.</p>
+        <div data-build="contact" data-build-id="footer-socials" className="build-pending flex gap-6">
           <a href="https://github.com/NoticedXAaryan" target="_blank" rel="noopener noreferrer" className="interactive text-zinc-400 hover:text-white transition-colors"><Github className="w-5 h-5" /></a>
           <a href="https://twitter.com/noticed_aaryan" target="_blank" rel="noopener noreferrer" className="interactive text-zinc-400 hover:text-white transition-colors"><Twitter className="w-5 h-5" /></a>
           <a href="https://www.linkedin.com/in/noticedxaaryan" target="_blank" rel="noopener noreferrer" className="interactive text-zinc-400 hover:text-white transition-colors"><Linkedin className="w-5 h-5" /></a>

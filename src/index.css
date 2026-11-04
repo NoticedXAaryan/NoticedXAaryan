@@ -52,3 +52,37 @@ a, button, [role="button"] {
 #macos .titlebar:active {
   cursor: grabbing !important;
 }
+
+/* Agent builders: elements wait invisible until a cursor "creates" them */
+.build-pending {
+  opacity: 0 !important;
+  transform: translateY(16px) scale(0.985);
+  filter: blur(2px);
+  pointer-events: none;
+}
+
+.build-ready {
+  opacity: 1;
+  transform: none;
+  filter: none;
+  pointer-events: auto;
+  transition:
+    opacity 420ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 520ms cubic-bezier(0.16, 1, 0.3, 1),
+    filter 420ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .build-pending,
+  .build-ready {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    transition: none !important;
+    pointer-events: auto !important;
+  }
+}
+
+#agent-builders-root {
+  mix-blend-mode: normal;
+}
