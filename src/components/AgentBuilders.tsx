@@ -1,234 +1,323 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { Pause, Play, SkipForward, Layers } from 'lucide-react';
-
-type AgentColor = string;
 
 interface Agent {
   id: number;
-  color: AgentColor;
-  name: string;
+  color: string;
   x: number;
   y: number;
   tx: number;
   ty: number;
   speed: number;
-  trail: { x: number; y: number; life: number; kind: 'plus' | 'cross' | 'dot' }[];
-  selecting: boolean;
-  targetEl: Element | null;
-  pauseUntil: number;
-  labelOpacity: number;
+  phase: 'fly' | 'click' | 'leave';
+  clickUntil: number;
+  target: HTMLElement | null;
+  opacity: number;
+  trail: { x: number; y: number; life: number }[];
 }
 
-interface SelectionBox {
-  id: string;
-  el: Element;
+interface FlashBox {
+  id: number;
   left: number;
   top: number;
   width: number;
   height: number;
-  color: string;
-  label: string;
-  life: number;
-  maxLife: number;
-}
-
-interface DrawLine {
-  id: string;
-  x1: number;
-  y1: number;
-  x2: number;
-  y2: number;
-  color: string;
   life: number;
 }
 
-const AGENT_COLORS = [
-  '#22d3ee', // cyan
-  '#f472b6', // pink
-  '#a3e635', // lime
-  '#facc15', // yellow
-  '#fb7185', // rose
-  '#60a5fa', // blue
-  '#c084fc', // purple
-  '#fb923c', // orange
-  '#4ade80', // green
-  '#f87171', // red
-  '#e2e8f0', // slate
-  '#2dd4bf', // teal
-];
+interface ClickRipple {
+  id: number;
+  x: number;
+  y: number;
+  life: number;
+  color: string;
+}
 
-const AGENT_NAMES = [
-  'Atlas', 'Nova', 'Pixel', 'Forge', 'Echo', 'Orbit',
-  'Prism', 'Quark', 'Relay', 'Spark', 'Vector', 'Wave',
-  'Bolt', 'Cipher', 'Drift', 'Flux', 'Glyph', 'Helix',
-  'Ion', 'Jade', 'Knot', 'Lynx', 'Mesh', 'Nexus',
-];
+const COLORS = ['#22d3ee', '#f472b6', '#a3e635', '#facc15', '#fb923c', '#c084fc'];
 
 function CursorSvg({ color }: { color: string }) {
   return (
-    <svg width="18" height="22" viewBox="0 0 18 22" fill="none" aria-hidden>
+    <svg width="16" height="20" viewBox="0 0 18 22" fill="none" aria-hidden>
       <path
         d="M1.2 1.1L16.4 10.2L9.7 12.1L6.9 20.4L1.2 1.1Z"
         fill={color}
         stroke="#0a0a0a"
-        strokeWidth="1.1"
+        strokeWidth="1"
         strokeLinejoin="round"
       />
     </svg>
   );
 }
 
-function pickTargets(): Element[] {
-  const selectors = [
-    'nav',
-    'h1',
-    'h2',
-    'h3',
-    'p',
-    'a',
-    'button',
-    'section',
-    '[data-agent-target]',
-    '.interactive',
-  ];
-  const nodes = Array.from(document.querySelectorAll(selectors.join(',')));
-  return nodes.filter((el) => {
-    if (el.closest('#agent-builders-root')) return false;
-    if (el.closest('#macos') || el.id === 'macos') return false;
-    const r = el.getBoundingClientRect();
-    return r.width > 24 && r.height > 12 && r.bottom > 0 && r.top < window.innerHeight;
-  });
+function markBuilt(el: HTMLElement) {
+  el.classList.remove('build-pending');
+  el.classList.add('build-ready');
+  el.dataset.buildState = 'ready';
 }
 
-function rectLabel(w: number, h: number) {
-  return `${Math.round(w)} × ${Math.round(h)}`;
+function isPending(el: Element): el is HTMLElement {
+  return (
+    el instanceof HTMLElement &&
+    el.dataset.buildState !== 'ready' &&
+    el.dataset.buildState !== 'building'
+  );
 }
 
 export default function AgentBuilders() {
-  const rootRef = useRef<HTMLDivElement>(null);
   const agentsRef = useRef<Agent[]>([]);
-  const selectionsRef = useRef<SelectionBox[]>([]);
-  const linesRef = useRef<DrawLine[]>([]);
-  const rafRef = useRef<number>(0);
+  const queueRef = useRef<HTMLElement[]>([]);
+  const flashesRef = useRef<FlashBox[]>([]);
+  const ripplesRef = useRef<ClickRipple[]>([]);
+  const rafRef = useRef(0);
+  const nextId = useRef(1);
+  const activeRef = useRef(false);
+  const heroDoneRef = useRef(false);
+  const dismissTimer = useRef<number | null>(null);
+  const [show, setShow] = useState(false);
   const [tick, setTick] = useState(0);
-  const [playing, setPlaying] = useState(true);
-  const [agentCount, setAgentCount] = useState(0);
-  const [layersBuilt, setLayersBuilt] = useState(0);
-  const [layersTotal, setLayersTotal] = useState(180);
-  const [scanning, setScanning] = useState(true);
-  const playingRef = useRef(true);
-  const builtSetRef = useRef<Set<Element>>(new Set());
-  const layersTotalRef = useRef(180);
-  const reducedMotion = useRef(false);
+  const claimedIds = useRef<Set<string>>(new Set());
 
-  useEffect(() => {
-    reducedMotion.current = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  }, []);
+  const pumpPendingInViewRef = useRef<() => void>(() => {});
 
-  const spawnAgents = useCallback(() => {
-    const count = Math.min(18, Math.max(10, Math.floor(window.innerWidth / 90)));
-    const w = window.innerWidth;
-    const h = window.innerHeight;
-    agentsRef.current = Array.from({ length: count }, (_, i) => {
-      const edge = i % 4;
-      const x =
-        edge === 0 ? Math.random() * w :
-        edge === 1 ? w + 40 :
-        edge === 2 ? Math.random() * w :
-        -40;
-      const y =
-        edge === 0 ? -40 :
-        edge === 1 ? Math.random() * h :
-        edge === 2 ? h + 40 :
-        Math.random() * h;
-      return {
-        id: i,
-        color: AGENT_COLORS[i % AGENT_COLORS.length],
-        name: AGENT_NAMES[i % AGENT_NAMES.length],
-        x,
-        y,
-        tx: w * 0.5 + (Math.random() - 0.5) * 200,
-        ty: h * 0.4 + (Math.random() - 0.5) * 160,
-        speed: 2.2 + Math.random() * 3.4,
-        trail: [],
-        selecting: false,
-        targetEl: null,
-        pauseUntil: 0,
-        labelOpacity: Math.random() > 0.45 ? 1 : 0,
-      } satisfies Agent;
-    });
-    setAgentCount(count);
-    const total = 140 + Math.floor(Math.random() * 120);
-    layersTotalRef.current = total;
-    setLayersTotal(total);
-    setScanning(true);
-    window.setTimeout(() => setScanning(false), 2200);
-  }, []);
-
-  const assignTarget = useCallback((agent: Agent) => {
-    const targets = pickTargets();
-    if (!targets.length) {
-      agent.tx = Math.random() * window.innerWidth;
-      agent.ty = Math.random() * window.innerHeight;
-      agent.targetEl = null;
-      return;
+  const clearAgentsSoon = useCallback(() => {
+    if (dismissTimer.current) window.clearTimeout(dismissTimer.current);
+    // Force leave
+    for (const agent of agentsRef.current) {
+      agent.phase = 'leave';
+      agent.target = null;
+      agent.speed = 34;
+      agent.ty = -80;
+      agent.tx = agent.x + (Math.random() - 0.5) * 60;
     }
-    const el = targets[Math.floor(Math.random() * targets.length)];
-    const r = el.getBoundingClientRect();
-    agent.targetEl = el;
-    agent.tx = r.left + r.width * (0.2 + Math.random() * 0.6);
-    agent.ty = r.top + r.height * (0.2 + Math.random() * 0.6);
+    dismissTimer.current = window.setTimeout(() => {
+      agentsRef.current = [];
+      flashesRef.current = [];
+      ripplesRef.current = [];
+      activeRef.current = false;
+      setShow(false);
+      setTick((t) => t + 1);
+      // Catch elements that entered view while we were busy / dismissing
+      pumpPendingInViewRef.current();
+    }, 220);
   }, []);
 
-  const createSelection = useCallback((el: Element, color: string, fromX: number, fromY: number) => {
-    const r = el.getBoundingClientRect();
-    if (r.width < 8 || r.height < 8) return;
-    const id = `${el.tagName}-${Math.round(r.left)}-${Math.round(r.top)}-${Date.now()}-${Math.random()}`;
-    selectionsRef.current.push({
-      id,
-      el,
-      left: r.left,
-      top: r.top,
-      width: r.width,
-      height: r.height,
-      color,
-      label: rectLabel(r.width, r.height),
-      life: 1,
-      maxLife: 0.85 + Math.random() * 1.4,
-    });
-    // Blueprint connector from agent to the box corner
-    linesRef.current.push({
-      id: `line-${id}`,
-      x1: fromX,
-      y1: fromY,
-      x2: r.left,
-      y2: r.top,
-      color: '#38bdf8',
-      life: 1,
-    });
-    // Extra guide lines across the box (wireframe feel)
-    if (Math.random() > 0.4) {
-      linesRef.current.push({
-        id: `hline-${id}`,
-        x1: r.left,
-        y1: r.top + r.height * 0.5,
-        x2: r.right,
-        y2: r.top + r.height * 0.5,
-        color: '#38bdf866',
-        life: 0.85,
+  const spawnAgents = useCallback((count: number, from: { x: number; y: number }) => {
+    if (dismissTimer.current) {
+      window.clearTimeout(dismissTimer.current);
+      dismissTimer.current = null;
+    }
+    // Replace any leftovers — keep the scene clean
+    agentsRef.current = [];
+    const agents: Agent[] = [];
+    for (let i = 0; i < count; i++) {
+      const angle = (Math.PI * 2 * i) / count - Math.PI / 2 + (Math.random() - 0.5) * 0.4;
+      agents.push({
+        id: nextId.current++,
+        color: COLORS[i % COLORS.length],
+        x: from.x,
+        y: from.y,
+        tx: from.x + Math.cos(angle) * 36,
+        ty: from.y + Math.sin(angle) * 36,
+        speed: 26 + Math.random() * 10,
+        phase: 'fly',
+        clickUntil: 0,
+        target: null,
+        opacity: 1,
+        trail: [],
       });
     }
-    if (!builtSetRef.current.has(el)) {
-      builtSetRef.current.add(el);
-      setLayersBuilt((n) => Math.min(n + 1, layersTotalRef.current));
-    } else if (Math.random() > 0.65) {
-      setLayersBuilt((n) => Math.min(n + 1, layersTotalRef.current));
+    agentsRef.current = agents;
+    activeRef.current = true;
+    setShow(true);
+  }, []);
+
+  const takeNext = useCallback((): HTMLElement | null => {
+    while (queueRef.current.length) {
+      const el = queueRef.current.shift()!;
+      if (isPending(el) || el.dataset.buildState === 'building') {
+        // skip already ready
+        if (el.dataset.buildState === 'ready') continue;
+        return el;
+      }
+    }
+    return null;
+  }, []);
+
+  const assignWork = useCallback((agent: Agent) => {
+    const next = takeNext();
+    if (!next) {
+      agent.phase = 'leave';
+      agent.target = null;
+      agent.speed = 32;
+      agent.tx = agent.x + (Math.random() - 0.5) * 40;
+      agent.ty = -90;
+      return;
+    }
+    next.dataset.buildState = 'building';
+    const r = next.getBoundingClientRect();
+    agent.target = next;
+    agent.phase = 'fly';
+    agent.speed = 28 + Math.random() * 12;
+    agent.tx = r.left + r.width * (0.3 + Math.random() * 0.4);
+    agent.ty = r.top + Math.min(Math.max(r.height * 0.45, 12), 48);
+    agent.opacity = 1;
+  }, [takeNext]);
+
+  const createElement = useCallback((agent: Agent) => {
+    const el = agent.target;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    markBuilt(el);
+    flashesRef.current.push({
+      id: nextId.current++,
+      left: r.left,
+      top: r.top,
+      width: Math.max(r.width, 8),
+      height: Math.max(r.height, 8),
+      life: 1,
+    });
+    ripplesRef.current.push({
+      id: nextId.current++,
+      x: agent.x,
+      y: agent.y,
+      life: 1,
+      color: agent.color,
+    });
+    agent.phase = 'click';
+    agent.clickUntil = performance.now() + 70;
+    agent.target = null;
+  }, []);
+
+  const finishIfIdle = useCallback(() => {
+    if (queueRef.current.length > 0) return;
+    const busy = agentsRef.current.some(
+      (a) => (a.phase === 'fly' && !!a.target) || a.phase === 'click'
+    );
+    if (busy) return;
+    // Anyone still flying without a target should be leaving; wait until gone
+    const stillVisible = agentsRef.current.some((a) => a.opacity > 0.08);
+    if (stillVisible && agentsRef.current.some((a) => a.phase !== 'leave')) return;
+    if (!heroDoneRef.current) heroDoneRef.current = true;
+    clearAgentsSoon();
+  }, [clearAgentsSoon]);
+
+  const enqueue = useCallback((els: HTMLElement[]) => {
+    for (const el of els) {
+      if (el.dataset.buildState === 'ready') continue;
+      if (queueRef.current.includes(el)) continue;
+      queueRef.current.push(el);
     }
   }, []);
 
+  const startHeroBuild = useCallback(() => {
+    const hero = Array.from(
+      document.querySelectorAll<HTMLElement>('[data-build="hero"]')
+    ).filter(isPending);
+    if (!hero.length) {
+      heroDoneRef.current = true;
+      return;
+    }
+    enqueue(hero);
+    const from = { x: window.innerWidth * 0.5, y: window.innerHeight * 0.42 };
+    spawnAgents(Math.min(5, hero.length), from);
+    agentsRef.current.forEach((agent, i) => {
+      window.setTimeout(() => assignWork(agent), 90 + i * 55);
+    });
+  }, [assignWork, enqueue, spawnAgents]);
+
+  const buildOnScroll = useCallback((el: HTMLElement) => {
+    if (!heroDoneRef.current) return;
+    const id = el.dataset.buildId || el.id || el.outerHTML.slice(0, 40);
+    if (claimedIds.current.has(id)) return;
+    if (el.dataset.buildState === 'ready' || el.dataset.buildState === 'building') return;
+
+    // One element per scroll beat — feels like a person clicking things in
+    const living = agentsRef.current.filter((a) => a.phase !== 'leave' && a.opacity > 0.1);
+    if (activeRef.current && living.length > 0) {
+      // Busy creating something else; leave this for a later intersection tick
+      return;
+    }
+
+    claimedIds.current.add(id);
+    enqueue([el]);
+
+    const r = el.getBoundingClientRect();
+    const from = {
+      x: Math.min(window.innerWidth - 48, Math.max(48, r.left + r.width * 0.12)),
+      y: Math.min(window.innerHeight - 48, Math.max(48, r.top + 12)),
+    };
+    // Single fast cursor feels more like a human scroll-click; second joins for bigger blocks
+    const count = r.height > 80 ? 2 : 1;
+    spawnAgents(count, from);
+    agentsRef.current.forEach((agent, i) => {
+      window.setTimeout(() => assignWork(agent), 16 + i * 30);
+    });
+  }, [assignWork, enqueue, spawnAgents]);
+
   useEffect(() => {
-    spawnAgents();
-    agentsRef.current.forEach(assignTarget);
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.querySelectorAll<HTMLElement>('[data-build]').forEach(markBuilt);
+      return;
+    }
+
+    document.querySelectorAll<HTMLElement>('[data-build]').forEach((el) => {
+      if (el.dataset.buildState === 'ready') return;
+      el.classList.add('build-pending');
+      el.dataset.buildState = 'pending';
+    });
+
+    const boot = window.setTimeout(() => startHeroBuild(), 260);
+    const safety = window.setTimeout(() => {
+      document.querySelectorAll<HTMLElement>('[data-build].build-pending').forEach(markBuilt);
+      heroDoneRef.current = true;
+      clearAgentsSoon();
+    }, 12000);
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .map((e) => e.target as HTMLElement)
+          .sort((a, b) => a.getBoundingClientRect().top - b.getBoundingClientRect().top);
+
+        // Only kick the top-most pending element — sequential create-on-scroll
+        for (const el of visible) {
+          if (el.dataset.build === 'hero') continue;
+          if (el.dataset.buildState === 'ready' || el.dataset.buildState === 'building') continue;
+          buildOnScroll(el);
+          break;
+        }
+      },
+      { root: null, rootMargin: '0px 0px -12% 0px', threshold: [0.25, 0.4] }
+    );
+
+    const pumpPendingInView = () => {
+      if (!heroDoneRef.current) return;
+      if (activeRef.current) return;
+      const pending = Array.from(
+        document.querySelectorAll<HTMLElement>('[data-build]:not([data-build="hero"])')
+      )
+        .filter(isPending)
+        .filter((el) => {
+          const id = el.dataset.buildId || el.id;
+          return !id || !claimedIds.current.has(id);
+        })
+        .filter((el) => {
+          const r = el.getBoundingClientRect();
+          return r.top < window.innerHeight * 0.88 && r.bottom > 40;
+        })
+        .sort((a, b) => a.getBoundingClientRect().top - b.getBoundingClientRect().top);
+      if (pending[0]) buildOnScroll(pending[0]);
+    };
+    pumpPendingInViewRef.current = pumpPendingInView;
+
+    const onScroll = () => pumpPendingInView();
+
+    const observeTimer = window.setTimeout(() => {
+      document
+        .querySelectorAll<HTMLElement>('[data-build]:not([data-build="hero"])')
+        .forEach((el) => io.observe(el));
+      window.addEventListener('scroll', onScroll, { passive: true });
+    }, 900);
 
     let last = performance.now();
     let renderAccum = 0;
@@ -238,82 +327,80 @@ export default function AgentBuilders() {
       last = now;
       renderAccum += dt;
 
-      if (playingRef.current && !reducedMotion.current) {
-        const agents = agentsRef.current;
-        for (const agent of agents) {
-          if (now < agent.pauseUntil) {
-            agent.selecting = true;
-            continue;
-          }
-          agent.selecting = false;
-
-          const dx = agent.tx - agent.x;
-          const dy = agent.ty - agent.y;
-          const dist = Math.hypot(dx, dy) || 1;
-
-          if (dist < 8) {
-            // Arrived — select / build, then retarget
-            if (agent.targetEl) {
-              createSelection(agent.targetEl, agent.color, agent.x, agent.y);
-              agent.pauseUntil = now + 280 + Math.random() * 700;
-              agent.selecting = true;
+      if (activeRef.current) {
+        for (const agent of agentsRef.current) {
+          if (agent.phase === 'click') {
+            if (now >= agent.clickUntil) {
+              if (queueRef.current.length) assignWork(agent);
+              else {
+                agent.phase = 'leave';
+                agent.speed = 34;
+                agent.tx = agent.x + (Math.random() - 0.5) * 50;
+                agent.ty = -90;
+              }
             }
-            assignTarget(agent);
           } else {
-            const step = Math.min(dist, agent.speed * (dt * 60));
-            agent.x += (dx / dist) * step;
-            agent.y += (dy / dist) * step;
+            const dx = agent.tx - agent.x;
+            const dy = agent.ty - agent.y;
+            const dist = Math.hypot(dx, dy) || 1;
+            // Fast travel
+            const step = Math.min(dist, agent.speed * dt * 60 * 0.42);
 
-            // subtle wander
-            agent.x += Math.sin(now / 320 + agent.id) * 0.15;
-            agent.y += Math.cos(now / 290 + agent.id * 1.3) * 0.15;
+            if (dist < 9) {
+              if (agent.phase === 'fly' && agent.target) {
+                createElement(agent);
+              } else if (agent.phase === 'leave') {
+                agent.opacity = 0;
+              } else if (agent.phase === 'fly' && !agent.target) {
+                // Idle burst particle — give it work or leave
+                if (queueRef.current.length) assignWork(agent);
+                else {
+                  agent.phase = 'leave';
+                  agent.ty = -90;
+                  agent.speed = 34;
+                }
+              }
+            } else {
+              agent.x += (dx / dist) * step;
+              agent.y += (dy / dist) * step;
+              if (agent.phase !== 'leave' && Math.random() < 0.4) {
+                agent.trail.push({ x: agent.x, y: agent.y, life: 1 });
+                if (agent.trail.length > 6) agent.trail.shift();
+              }
+            }
 
-            if (Math.random() < 0.35) {
-              agent.trail.push({
-                x: agent.x - 4 + Math.random() * 8,
-                y: agent.y - 4 + Math.random() * 8,
-                life: 1,
-                kind: Math.random() > 0.55 ? 'plus' : Math.random() > 0.5 ? 'cross' : 'dot',
-              });
-              if (agent.trail.length > 18) agent.trail.shift();
+            if (agent.phase === 'leave') {
+              agent.opacity = Math.max(0, agent.opacity - dt * 5.5);
             }
           }
 
           for (let i = agent.trail.length - 1; i >= 0; i--) {
-            agent.trail[i].life -= dt * 1.6;
+            agent.trail[i].life -= dt * 4;
             if (agent.trail[i].life <= 0) agent.trail.splice(i, 1);
           }
         }
 
-        for (let i = selectionsRef.current.length - 1; i >= 0; i--) {
-          const s = selectionsRef.current[i];
-          s.life -= dt / s.maxLife;
-          if (s.life <= 0 || !s.el.isConnected) {
-            selectionsRef.current.splice(i, 1);
-            continue;
-          }
-          // Keep boxes glued to their DOM targets while scrolling
-          const r = s.el.getBoundingClientRect();
-          if (r.width < 4 || r.height < 4 || r.bottom < -40 || r.top > window.innerHeight + 40) {
-            selectionsRef.current.splice(i, 1);
-            continue;
-          }
-          s.left = r.left;
-          s.top = r.top;
-          s.width = r.width;
-          s.height = r.height;
-          s.label = rectLabel(r.width, r.height);
+        agentsRef.current = agentsRef.current.filter(
+          (a) => !(a.phase === 'leave' && a.opacity <= 0.02)
+        );
+
+        for (let i = flashesRef.current.length - 1; i >= 0; i--) {
+          flashesRef.current[i].life -= dt * 3;
+          if (flashesRef.current[i].life <= 0) flashesRef.current.splice(i, 1);
         }
-        for (let i = linesRef.current.length - 1; i >= 0; i--) {
-          const line = linesRef.current[i];
-          line.life -= dt * 1.1;
-          if (line.life <= 0) linesRef.current.splice(i, 1);
+        for (let i = ripplesRef.current.length - 1; i >= 0; i--) {
+          ripplesRef.current[i].life -= dt * 3.2;
+          if (ripplesRef.current[i].life <= 0) ripplesRef.current.splice(i, 1);
         }
+
+        finishIfIdle();
       }
 
-      if (renderAccum > 1 / 30) {
+      if (renderAccum > 1 / 45) {
         renderAccum = 0;
-        setTick((t) => t + 1);
+        if (activeRef.current || flashesRef.current.length || ripplesRef.current.length) {
+          setTick((t) => t + 1);
+        }
       }
 
       rafRef.current = requestAnimationFrame(loop);
@@ -321,205 +408,94 @@ export default function AgentBuilders() {
 
     rafRef.current = requestAnimationFrame(loop);
 
-    const onResize = () => {
-      spawnAgents();
-      agentsRef.current.forEach(assignTarget);
-    };
-    window.addEventListener('resize', onResize);
-
     return () => {
+      window.clearTimeout(boot);
+      window.clearTimeout(safety);
+      window.clearTimeout(observeTimer);
+      if (dismissTimer.current) window.clearTimeout(dismissTimer.current);
       cancelAnimationFrame(rafRef.current);
-      window.removeEventListener('resize', onResize);
+      io.disconnect();
+      window.removeEventListener('scroll', onScroll);
     };
-  }, [assignTarget, createSelection, spawnAgents]);
+  }, [assignWork, buildOnScroll, clearAgentsSoon, createElement, finishIfIdle, startHeroBuild]);
 
-  useEffect(() => {
-    playingRef.current = playing;
-  }, [playing]);
-
-  // keep tick referenced so React re-renders from rAF
   void tick;
 
+  if (!show && flashesRef.current.length === 0 && ripplesRef.current.length === 0) {
+    return null;
+  }
+
   const agents = agentsRef.current;
-  const selections = selectionsRef.current;
-  const lines = linesRef.current;
+  const flashes = flashesRef.current;
+  const ripples = ripplesRef.current;
 
   return (
-    <div
-      id="agent-builders-root"
-      ref={rootRef}
-      className="pointer-events-none fixed inset-0 z-[80] overflow-hidden"
-      aria-hidden
-    >
-      {/* Blueprint connectors */}
-      <svg className="absolute inset-0 w-full h-full overflow-visible">
-        {lines.map((line) => (
-          <line
-            key={line.id}
-            x1={line.x1}
-            y1={line.y1}
-            x2={line.x2}
-            y2={line.y2}
-            stroke={line.color}
-            strokeWidth="1"
-            opacity={Math.max(0, line.life)}
-          />
-        ))}
-      </svg>
-
-      {/* Selection boxes */}
-      {selections.map((s) => (
+    <div id="agent-builders-root" className="pointer-events-none fixed inset-0 z-[80] overflow-hidden" aria-hidden>
+      {flashes.map((f) => (
         <div
-          key={s.id}
-          className="absolute"
+          key={f.id}
+          className="absolute border border-sky-400/80"
           style={{
-            left: s.left,
-            top: s.top,
-            width: s.width,
-            height: s.height,
-            opacity: Math.max(0, Math.min(1, s.life * 1.4)),
+            left: f.left,
+            top: f.top,
+            width: f.width,
+            height: f.height,
+            opacity: Math.max(0, f.life * 0.95),
           }}
         >
-          <div
-            className="absolute inset-0"
-            style={{
-              border: `1px solid ${s.color === '#e2e8f0' ? '#38bdf8' : '#38bdf8'}`,
-              boxShadow: '0 0 0 1px rgba(56,189,248,0.15)',
-            }}
-          />
-          {/* Corner + edge handles */}
-          {[
-            ['-3px', '-3px'], ['calc(50% - 3px)', '-3px'], ['calc(100% - 3px)', '-3px'],
-            ['-3px', 'calc(50% - 3px)'], ['calc(100% - 3px)', 'calc(50% - 3px)'],
-            ['-3px', 'calc(100% - 3px)'], ['calc(50% - 3px)', 'calc(100% - 3px)'], ['calc(100% - 3px)', 'calc(100% - 3px)'],
-          ].map(([l, t], i) => (
-            <span
-              key={i}
-              className="absolute w-[6px] h-[6px] bg-sky-400 border border-sky-200"
-              style={{ left: l, top: t }}
-            />
-          ))}
-          <span
-            className="absolute -top-5 left-0 font-mono text-[10px] tracking-tight text-sky-300 whitespace-nowrap px-1 py-0.5 bg-black/70 border border-sky-500/40"
-          >
-            {s.label}
-          </span>
+          <span className="absolute -top-1 -left-1 w-1.5 h-1.5 bg-sky-400" />
+          <span className="absolute -top-1 -right-1 w-1.5 h-1.5 bg-sky-400" />
+          <span className="absolute -bottom-1 -left-1 w-1.5 h-1.5 bg-sky-400" />
+          <span className="absolute -bottom-1 -right-1 w-1.5 h-1.5 bg-sky-400" />
         </div>
       ))}
 
-      {/* Trails + cursors */}
+      {ripples.map((r) => (
+        <span
+          key={r.id}
+          className="absolute rounded-full border"
+          style={{
+            left: r.x,
+            top: r.y,
+            width: 10 + (1 - r.life) * 22,
+            height: 10 + (1 - r.life) * 22,
+            marginLeft: -(5 + (1 - r.life) * 11),
+            marginTop: -(5 + (1 - r.life) * 11),
+            borderColor: r.color,
+            opacity: r.life * 0.65,
+          }}
+        />
+      ))}
+
       {agents.map((agent) => (
         <React.Fragment key={agent.id}>
           {agent.trail.map((p, i) => (
             <span
-              key={`${agent.id}-t-${i}`}
-              className="absolute font-mono leading-none select-none"
+              key={`${agent.id}-${i}`}
+              className="absolute font-mono text-[9px] leading-none"
               style={{
                 left: p.x,
                 top: p.y,
                 color: agent.color,
-                opacity: p.life * 0.85,
-                fontSize: p.kind === 'dot' ? 8 : 11,
+                opacity: p.life * agent.opacity * 0.65,
                 transform: 'translate(-50%, -50%)',
               }}
             >
-              {p.kind === 'plus' ? '+' : p.kind === 'cross' ? '×' : '•'}
+              +
             </span>
           ))}
           <div
             className="absolute will-change-transform"
             style={{
-              left: 0,
-              top: 0,
-              transform: `translate3d(${agent.x}px, ${agent.y}px, 0)`,
+              transform: `translate3d(${agent.x}px, ${agent.y}px, 0) scale(${agent.phase === 'click' ? 0.84 : 1})`,
+              opacity: agent.opacity,
+              filter: `drop-shadow(0 0 3px ${agent.color}aa)`,
             }}
           >
-            <div
-              className="relative"
-              style={{
-                filter: agent.selecting
-                  ? `drop-shadow(0 0 6px ${agent.color})`
-                  : `drop-shadow(0 0 2px ${agent.color}88)`,
-              }}
-            >
-              <CursorSvg color={agent.color} />
-              {agent.labelOpacity > 0 && (
-                <span
-                  className="absolute left-4 top-4 whitespace-nowrap font-mono text-[10px] font-medium px-1.5 py-0.5 rounded-sm border"
-                  style={{
-                    color: '#0a0a0a',
-                    background: agent.color,
-                    borderColor: 'rgba(0,0,0,0.25)',
-                    opacity: 0.95,
-                  }}
-                >
-                  {agent.name}
-                </span>
-              )}
-            </div>
+            <CursorSvg color={agent.color} />
           </div>
         </React.Fragment>
       ))}
-
-      {/* Bottom status bar */}
-      <div className="pointer-events-auto absolute bottom-5 left-1/2 -translate-x-1/2 z-[81]">
-        <div className="flex items-center gap-3 rounded-full border border-white/10 bg-zinc-950/80 backdrop-blur-xl px-3 py-2 shadow-[0_8px_40px_rgba(0,0,0,0.55)]">
-          <div className="flex -space-x-1.5 pl-1">
-            {AGENT_COLORS.slice(0, 6).map((c) => (
-              <span
-                key={c}
-                className="w-2.5 h-2.5 rounded-full ring-2 ring-zinc-950"
-                style={{ background: c }}
-              />
-            ))}
-          </div>
-          {scanning ? (
-            <span className="font-mono text-[11px] text-sky-300 tracking-tight animate-pulse">
-              Scanning page…
-            </span>
-          ) : (
-            <span className="font-mono text-[11px] text-zinc-200 tracking-tight">
-              {agentCount} agents
-            </span>
-          )}
-          <span className="w-px h-3 bg-white/15" />
-          <span className="inline-flex items-center gap-1.5 font-mono text-[11px] text-zinc-400">
-            <Layers className="w-3 h-3" />
-            {layersBuilt} / {layersTotal} layers
-          </span>
-          <span className="hidden sm:inline-block w-16 h-1 rounded-full bg-white/10 overflow-hidden">
-            <span
-              className="block h-full bg-sky-400/80 transition-[width] duration-300"
-              style={{ width: `${Math.min(100, (layersBuilt / Math.max(1, layersTotal)) * 100)}%` }}
-            />
-          </span>
-          <span className="w-px h-3 bg-white/15" />
-          <div className="flex items-center gap-1">
-            <button
-              type="button"
-              aria-label={playing ? 'Pause agents' : 'Play agents'}
-              onClick={() => setPlaying((p) => !p)}
-              className="interactive p-1.5 rounded-full text-zinc-300 hover:text-white hover:bg-white/10 transition-colors"
-            >
-              {playing ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
-            </button>
-            <button
-              type="button"
-              aria-label="Reseed agents"
-              onClick={() => {
-                builtSetRef.current.clear();
-                setLayersBuilt(0);
-                spawnAgents();
-                agentsRef.current.forEach(assignTarget);
-                setPlaying(true);
-              }}
-              className="interactive p-1.5 rounded-full text-zinc-300 hover:text-white hover:bg-white/10 transition-colors"
-            >
-              <SkipForward className="w-3.5 h-3.5" />
-            </button>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
